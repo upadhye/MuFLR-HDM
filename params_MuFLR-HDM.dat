@@ -89,7 +89,7 @@
 # ---------------------------- transfer inputs ---------------------------------
 #
 # Transfer function at z=0, in CAMB standard format (7 columns)
-/home/aupadhye/work/class/class_public-3.2.0/AU_nu05/output/nu0525_tk.dat
+classout_tk.dat
 
 # HDM approx: 0 for CAMB/CLASS interpolation: not implemented in MuFLR-HDM
 #             1 for multi-fluid linear response (MuFLR-HDM)
