@@ -101,7 +101,7 @@ classout_tk.dat
 # well after decoupling but while the HDM species remains ultrarelativistic
 1.95280830923360
 
-# HDM multiplicity g_{hdm} 
+# HDM degeneracy deg_{hdm} 
 3.044
 
 # distribution function file containing two columns: q	f(q)
