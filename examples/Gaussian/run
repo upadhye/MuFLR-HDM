@@ -1,0 +1,83 @@
+#!/bin/bash
+
+######################### BEGIN USER-DEFINED QUANTITIES ########################
+
+#cosmological parameters, input
+COSMO_MODEL=g05
+COSMO_NS=0.9665
+COSMO_SIG8=0.7139
+COSMO_H0=0.6766
+COSMO_OM=0.309641441545506
+COSMO_OB=0.0489746816186967
+COSMO_OH=0.0109220967035452
+COSMO_TCMBK=2.7255
+COSMO_W0=-1.0
+COSMO_WA=0.0
+COSMO_THDMK=1.95280830923360
+COSMO_MHDM=0.0393425
+COSMO_FHDM=f_g0.dat
+
+#output redshifts and switches
+OUTPUT_Z="99 19 9 5 0"
+OUTPUT_NL=0
+OUTPUT_PRINT=2
+
+#class and MuFLR-HDM executables
+EXEC_CLASS=./class
+EXEC_MUFLR_HDM=./MuFLR-HDM
+
+########################## END USER-DEFINED QUANTITIES #########################
+
+########## derived quantities
+DERIV_COSMO_OC=$(echo "${COSMO_OM} - ${COSMO_OB} - ${COSMO_OH}" | bc -l)
+DERIV_COSMO_THDM_TCMB=$(echo "${COSMO_THDMK} / ${COSMO_TCMBK}" | bc -l)
+DERIV_NZ=$(echo ${OUTPUT_Z} | wc -w)
+
+########## run class
+sed -e s/TEMPLATE_CLASS_H0/${COSMO_H0}/g \
+	-e s/TEMPLATE_CLASS_TAU/${COSMO_TAU}/g \
+	-e s/TEMPLATE_CLASS_TCMBK/${COSMO_TCMBK}/g \
+	-e s/TEMPLATE_CLASS_OB/${COSMO_OB}/g \
+	-e s/TEMPLATE_CLASS_OC/${DERIV_COSMO_OC}/g \
+	-e s+TEMPLATE_CLASS_F_DISTRIB+"${COSMO_FHDM}"+g \
+	-e s/TEMPLATE_CLASS_OH/${COSMO_OH}/g \
+	-e s/TEMPLATE_CLASS_THDM_TCMB/${DERIV_COSMO_THDM_TCMB}/g \
+	-e s/TEMPLATE_CLASS_M_HDM/${COSMO_MHDM}/g \
+	-e s/TEMPLATE_CLASS_W0/${COSMO_W0}/g \
+	-e s/TEMPLATE_CLASS_WA/${COSMO_WA}/g \
+	-e s/TEMPLATE_CLASS_SIG8/${COSMO_SIG8}/g \
+	-e s/TEMPLATE_CLASS_NS/${COSMO_NS}/g \
+	class_template.ini > input_class_${COSMO_MODEL}.ini
+(time ${EXEC_CLASS} input_class_${COSMO_MODEL}.ini) >& output_class_${COSMO_MODEL}.txt
+
+########## run MuFLR-HDM
+echo ${COSMO_NS} > params_MuFLR-HDM.dat
+echo ${COSMO_SIG8} >> params_MuFLR-HDM.dat
+echo ${COSMO_H0} >> params_MuFLR-HDM.dat
+echo ${COSMO_OM} >> params_MuFLR-HDM.dat
+echo ${COSMO_OB} >> params_MuFLR-HDM.dat
+echo ${COSMO_OH} >> params_MuFLR-HDM.dat
+echo ${COSMO_TCMBK} >> params_MuFLR-HDM.dat
+echo ${COSMO_W0} >> params_MuFLR-HDM.dat
+echo ${COSMO_WA} >> params_MuFLR-HDM.dat
+echo ${OUTPUT_NL} >> params_MuFLR-HDM.dat
+echo "0" >> params_MuFLR-HDM.dat
+echo ${OUTPUT_PRINT} >> params_MuFLR-HDM.dat
+echo "0" >> params_MuFLR-HDM.dat
+echo "200" >> params_MuFLR-HDM.dat
+echo ${DERIV_NZ} >> params_MuFLR-HDM.dat
+echo "${OUTPUT_Z}" >> params_MuFLR-HDM.dat
+echo "classout_tk.dat" >> params_MuFLR-HDM.dat
+echo "1" >> params_MuFLR-HDM.dat
+echo ${COSMO_THDMK} >> params_MuFLR-HDM.dat
+echo ${COSMO_MHDM} >> params_MuFLR-HDM.dat
+echo ${COSMO_FHDM} >> params_MuFLR-HDM.dat
+
+N_TAU=$(grep "const int N_tau = " AU_cosmofunc.h | sed -e s/"const int N_tau = "//g -e s/";.*$"//g)
+N_MU=$(grep "const int N_mu = " AU_cosmofunc.h | sed -e s/"const int N_mu = "//g -e s/";.*$"//g)
+
+(time ${EXEC_MUFLR_HDM} ./params_MuFLR-HDM.dat ) >& MuFLR-HDM_${COSMO_MODEL}_Ntau${N_TAU}_Nmu${N_MU}.txt
+
+#save inputs
+#cp -p classout_tk.dat classout_tk_${COSMO_MODEL}.dat
+#cp -p params_MuFLR-HDM.dat params_MuFLR-HDM_${COSMO_MODEL}.dat

@@ -89,7 +89,7 @@
 # ---------------------------- transfer inputs ---------------------------------
 #
 # Transfer function at z=0, in CAMB standard format (7 columns)
-classout_tk.dat
+/home/aupadhye/work/class/class_public-3.2.0/AU_nu05/output/nu0525_tk.dat
 
 # HDM approx: 0 for CAMB/CLASS interpolation: not implemented in MuFLR-HDM
 #             1 for multi-fluid linear response (MuFLR-HDM)
@@ -101,8 +101,8 @@ classout_tk.dat
 # well after decoupling but while the HDM species remains ultrarelativistic
 1.95280830923360
 
-# HDM degeneracy deg_{hdm} 
-3.044
+# HDM mass m_hdm_eV in eV; effective degeneracy determined by m, T, Omega
+0.153174
 
 # distribution function file containing two columns: q	f(q)
 # where q = p/T_{hdm} and f is the unperturbed distribution function
