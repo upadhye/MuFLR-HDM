@@ -23,7 +23,7 @@
 #   file_transfer_function
 #   num_massive_nu_approx
 #   T_hdm[Kelvins]
-#   g_hdm
+#   m_hdm[eV]
 #   file_distribution_function
 # where parameters beginning with "switch" are 0 or 1, those beginning with 
 # "num" are integers, and those beginning with "file" are character strings.)
